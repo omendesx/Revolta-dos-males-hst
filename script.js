@@ -1,93 +1,30 @@
-const menuToggle = document.getElementById("menu-toggle");
-const sidebar = document.querySelector(".sidebar");
+// script.js - Versão corrigida
+const menuToggle = document.getElementById('menu-toggle');
+const sidebar = document.querySelector('.sidebar');
 
-// Verifica se é mobile
-function isMobile() {
-    return window.innerWidth <= 900;
+// Função para alternar o menu (abrir/fechar)
+function toggleMenu() {
+    sidebar.classList.toggle('closed');
 }
 
-// Função para fechar sidebar no mobile
-function closeMobileSidebar() {
-    if (isMobile()) {
-        sidebar.classList.remove("mobile-open");
-        
-        setTimeout(() => {
-            const overlay = document.querySelector(".overlay");
-            if (overlay && !sidebar.classList.contains("mobile-open")) {
-                overlay.classList.remove("active");
-            }
-        }, 300);
-        
-        document.body.style.overflow = "";
-    }
-}
-
-// Função para abrir sidebar no mobile
-function openMobileSidebar() {
-    if (isMobile()) {
-        sidebar.classList.add("mobile-open");
-        
-        let overlay = document.querySelector(".overlay");
-        if (!overlay) {
-            overlay = document.createElement("div");
-            overlay.className = "overlay";
-            document.body.appendChild(overlay);
-            
-            overlay.addEventListener("click", closeMobileSidebar);
-        }
-        
-        setTimeout(() => {
-            overlay.classList.add("active");
-        }, 10);
-        
-        document.body.style.overflow = "hidden";
-    }
-}
-
-// Evento do botão toggle (sem animação no botão)
-menuToggle.addEventListener("click", (e) => {
-    e.stopPropagation();
+// Configurar comportamento baseado no tamanho da tela
+function setupMenu() {
+    const isMobile = window.innerWidth <= 768;
     
-    if (isMobile()) {
-        if (sidebar.classList.contains("mobile-open")) {
-            closeMobileSidebar();
-        } else {
-            openMobileSidebar();
-        }
+    if (isMobile) {
+        // MOBILE: Menu começa fechado
+        sidebar.classList.add('closed');
     } else {
-        sidebar.classList.toggle("closed");
+        // DESKTOP: Menu começa aberto
+        sidebar.classList.remove('closed');
     }
-});
+    
+    // Garante que o botão sempre funcione
+    menuToggle.onclick = toggleMenu;
+}
 
-// Fecha sidebar mobile ao clicar em um link
-const navLinks = document.querySelectorAll(".sidebar a");
-navLinks.forEach(link => {
-    link.addEventListener("click", () => {
-        if (isMobile()) {
-            closeMobileSidebar();
-        }
-    });
-});
+// Executa ao carregar a página
+setupMenu();
 
-// Fecha sidebar mobile ao redimensionar para desktop
-window.addEventListener("resize", () => {
-    if (!isMobile()) {
-        if (sidebar.classList.contains("mobile-open")) {
-            sidebar.classList.remove("mobile-open");
-            
-            const overlay = document.querySelector(".overlay");
-            if (overlay) {
-                overlay.classList.remove("active");
-            }
-            
-            document.body.style.overflow = "";
-        }
-    }
-});
-
-// Previne que clique dentro da sidebar feche ela no mobile
-sidebar.addEventListener("click", (e) => {
-    if (isMobile()) {
-        e.stopPropagation();
-    }
-});
+// Executa ao redimensionar a tela
+window.addEventListener('resize', setupMenu);
